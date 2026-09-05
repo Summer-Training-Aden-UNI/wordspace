@@ -6,7 +6,6 @@
 
 <div class="site-container py-10 md:py-16">
 
-```
 {{-- Page Header --}}
 <header class="border-b border-[var(--border-subtle)] pb-8">
 
@@ -145,7 +144,6 @@
     </div>
 
 </section>
-```
 
 </div>
 

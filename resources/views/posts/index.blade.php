@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="site-container py-16 md:py-24">
+<div class="site-container py-8 md:py-24">
 
 {{-- Page Header --}}
 <div class="mb-12 md:mb-16">

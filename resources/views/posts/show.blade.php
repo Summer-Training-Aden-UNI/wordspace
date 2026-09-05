@@ -4,6 +4,11 @@
 
 @section('content')
 
+@php
+ $wordCount = str_word_count(strip_tags($post->content)); 
+ $readingTime = max(1, ceil($wordCount / 200)); 
+@endphp
+
 <div class="site-container py-10 md:py-14">
 
 {{-- Post --}}
@@ -32,6 +37,14 @@
 
             <span class="meta-small">
                 {{ $post->created_at->format('M d, Y') }}
+            </span>
+
+            <span class="text-[var(--color-outline-variant)]"> 
+                / 
+                </span> 
+            <span class="meta-small"> 
+                {{ $readingTime }} min read 
+
             </span>
 
         </div>

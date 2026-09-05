@@ -3,21 +3,24 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-    @yield('title', 'WordSpace')
-</title>
+    <title>
+        @yield('title', 'WordSpace')
+    </title>
 
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
 
 <body>
 
 {{-- Header --}}
-<header class="border-b border-[var(--border-subtle)] bg-[var(--color-surface)]">
+<header
+    class="fixed inset-x-0 top-0 z-50 border-b border-[var(--border-subtle)] bg-[var(--color-surface)]"
+>
 
     <nav class="site-container flex h-20 items-center justify-between">
 
@@ -67,6 +70,7 @@
                     method="POST"
                     action="{{ route('logout') }}"
                 >
+
                     @csrf
 
                     <button
@@ -103,6 +107,19 @@
 
     </nav>
 
+
+    {{-- Reading Progress Bar --}}
+    <div
+        class="absolute bottom-0 left-0 h-[2px] w-full bg-[var(--color-surface-container)]"
+    >
+
+        <div
+            id="scroll-progress"
+            class="h-full w-0 bg-[var(--color-primary)]"
+        ></div>
+
+    </div>
+
 </header>
 
 
@@ -121,20 +138,27 @@
 
 
 {{-- Main Content --}}
-<main>
+<main class="pt-20">
+
     @yield('content')
+
 </main>
 
 
 {{-- Footer --}}
-<footer class="mt-24 border-t border-[var(--border-subtle)] bg-[var(--color-surface-container-low)]">
+<footer
+    class="mt-24 border-t border-[var(--border-subtle)] bg-[var(--color-surface-container-low)]"
+>
 
     <div class="site-container py-10">
 
-        <div class="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:text-left">
+        <div
+            class="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:text-left"
+        >
 
             {{-- Brand --}}
             <div>
+
                 <p class="font-display text-xl font-medium text-[var(--color-primary)]">
                     WordSpace
                 </p>
@@ -142,6 +166,7 @@
                 <p class="mt-1 text-sm text-[var(--color-on-surface-variant)]">
                     A space for ideas, stories, and thoughtful writing.
                 </p>
+
             </div>
 
 
@@ -155,6 +180,36 @@
     </div>
 
 </footer>
+
+
+{{-- Scroll Progress --}}
+<script>
+
+    const progressBar = document.getElementById('scroll-progress');
+
+    function updateScrollProgress() {
+
+        const scrollTop = window.scrollY;
+
+        const documentHeight =
+            document.documentElement.scrollHeight - window.innerHeight;
+
+        const progress =
+            documentHeight > 0
+                ? (scrollTop / documentHeight) * 100
+                : 0;
+
+        progressBar.style.width = `${progress}%`;
+
+    }
+
+    window.addEventListener('scroll', updateScrollProgress);
+    window.addEventListener('resize', updateScrollProgress);
+
+    updateScrollProgress();
+
+</script>
+
 
 </body>
 

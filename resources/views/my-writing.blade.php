@@ -6,7 +6,6 @@
 
 <div class="site-container py-10 md:py-16">
 
-```
 {{-- Page Header --}}
 <header class="border-b border-[var(--border-subtle)] pb-8">
 
@@ -50,7 +49,7 @@
                 Your Writing
             </p>
 
-            <h2 class="mt-1 text-3xl">
+            <h2 class="mt-1 text-3xl text-[var(--color-primary)]">
                 Published Posts
             </h2>
 
@@ -125,7 +124,7 @@
             Unfinished
         </p>
 
-        <h2 class="mt-1 text-3xl">
+        <h2 class="mt-1 text-3xl text-[var(--color-secondary)]">
             Drafts
         </h2>
 
@@ -199,7 +198,6 @@
     </div>
 
 </section>
-```
 
 </div>
 
