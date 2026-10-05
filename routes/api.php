@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ApiCommentController;
 use App\Http\Controllers\Api\ApiLikeController;
 use App\Http\Controllers\Api\ApiProfileController;
 use App\Http\Controllers\Api\ApiAdminController;
+use App\Http\Controllers\Api\ApiFollowController;
+use App\Http\Controllers\Api\ApiUserController;
 use App\Http\Resources\UserResource;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -44,7 +46,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users', [ApiAdminController::class, 'users']);
         Route::delete('/users/{user}', [ApiAdminController::class, 'destroyUser']);
     });
+
+
+    //Routes for following and unfollowing users
+    Route::post('/users/{user}/follow', [ApiFollowController::class, 'store']);
+    Route::delete('/users/{user}/follow', [ApiFollowController::class, 'destroy']);
     
     
 
 });
+
+//Public routes for following and unfollowing users
+Route::get('/users/{user}', [ApiUserController::class, 'show']);
+Route::get('/users/{user}/posts', [ApiUserController::class, 'posts']);
+Route::get('/users/{user}/followers', [ApiUserController::class, 'followers']);
+Route::get('/users/{user}/following', [ApiUserController::class, 'following']);

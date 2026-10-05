@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Like;
 
@@ -74,4 +75,41 @@ class User extends Authenticatable
     {
     return $this->hasMany(Like::class);
     }
+
+    public function followers(): BelongsToMany
+{
+    return $this->belongsToMany(
+        User::class,
+        'follows',
+        'following_id',
+        'follower_id'
+    );
+}
+
+public function following(): BelongsToMany
+{
+    return $this->belongsToMany(
+        User::class,
+        'follows',
+        'follower_id',
+        'following_id'
+    );
+}
+
+public function follow(User $user): void
+{
+    $this->following()->syncWithoutDetaching([$user->id]);
+}
+
+public function unfollow(User $user): void
+{
+    $this->following()->detach($user->id);
+}
+
+public function isFollowing(User $user): bool
+{
+    return $this->following()
+        ->where('users.id', $user->id)
+        ->exists();
+}
 }
