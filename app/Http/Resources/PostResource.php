@@ -13,6 +13,7 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
+            'image_url' => $this->image ? asset('storage/' . $this->image) : null,
             'status' => $this->status,
             'comments_count' => $this->comments_count,
             'likes_count' => $this->likes_count,
