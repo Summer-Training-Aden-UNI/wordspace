@@ -26,6 +26,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'username',
+        'bio',
+        'avatar',
     ];
 
     /**
@@ -73,5 +76,13 @@ class User extends Authenticatable
     public function likes()
     {
     return $this->hasMany(Like::class);
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            return \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar);
+        }
+        return null;
     }
 }

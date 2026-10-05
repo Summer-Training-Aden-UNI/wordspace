@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}/likes', [ApiLikeController::class, 'destroy']);
     Route::get('/posts/{post}/likes', [ApiLikeController::class, 'index']);
     Route::get('/profile', [ApiProfileController::class, 'show']);
+    Route::post('/profile', [ApiProfileController::class, 'update']);
     
     
     //admin:

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\like;
+use App\Models\Like;
 class Post extends Model
 {
     protected $fillable = [

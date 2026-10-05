@@ -12,7 +12,7 @@ class ApiPostController extends Controller
     {
         $posts = Post::where('status', 'published')->withcount(['comments', 'likes'])
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return PostResource::collection($posts);
     }
