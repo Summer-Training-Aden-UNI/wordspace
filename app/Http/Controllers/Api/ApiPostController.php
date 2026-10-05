@@ -22,7 +22,7 @@ class ApiPostController extends Controller
             ->search($request->query('search'))      
             ->withCount(['comments', 'likes'])
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return PostResource::collection($posts);
     }
