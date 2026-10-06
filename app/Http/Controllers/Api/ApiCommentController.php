@@ -12,6 +12,7 @@ class ApiCommentController extends Controller
     public function index(Post $post)
     {
         $comments = $post->comments()
+            ->with('user')
             ->latest()
             ->get();
 
