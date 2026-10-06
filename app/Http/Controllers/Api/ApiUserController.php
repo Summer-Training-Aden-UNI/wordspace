@@ -10,6 +10,18 @@ use Illuminate\Http\Request;
 
 class ApiUserController extends Controller
 {
+    public function index(Request $request)
+{
+    $request->validate([
+        'search' => 'required|string|min:2|max:100',
+    ]);
+
+    $users = User::search($request->query('search'))
+        ->orderBy('username')
+        ->paginate(20);
+
+    return PublicUserResource::collection($users);
+}
     public function show(Request $request, User $user)
     {
         $user->loadCount([

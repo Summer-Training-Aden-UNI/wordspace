@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiPostController;
+use App\Http\Controllers\Api\ApiSearchController;
 use App\Http\Controllers\Api\ApiCommentController;
 use App\Http\Controllers\Api\ApiLikeController;
 use App\Http\Controllers\Api\ApiProfileController;
@@ -17,6 +18,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/posts', [ApiPostController::class, 'index']);
 Route::get('/posts/{post}', [ApiPostController::class, 'show']);
 Route::get('/posts/{post}/comments', [ApiCommentController::class, 'index']);
+
+//Search
+Route::get('/search', [ApiSearchController::class, 'index']);
+Route::get('/users', [ApiUserController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
