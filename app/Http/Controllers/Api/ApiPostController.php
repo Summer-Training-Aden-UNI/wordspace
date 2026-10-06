@@ -1,83 +1,111 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Http\Resources\PostResource;
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ApiPostController extends Controller
 {
-    public function index()
+
+    public function index(Request $request)
     {
-        $posts = Post::where('status', 'published')->withcount(['comments', 'likes'])
+        $request->validate([
+            'search' => 'nullable|string|max:100',
+        ]);
+
+        $posts = Post::with('user:id,name')          
+            ->where('status', 'published')
+            ->search($request->query('search'))      
+            ->withCount(['comments', 'likes'])
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return PostResource::collection($posts);
     }
 
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'content' => 'required|string',
-        'status' => 'required|in:draft,published',
-    ]);
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'status' => 'required|in:draft,published',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', // NEW (2 MB)
+        ]);
 
-    $validated['user_id'] = auth()->id();
+        
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('posts', 'public');
+        }
 
-    $post = Post::create($validated);
+        $validated['user_id'] = auth()->id();
 
-    return (new PostResource($post))
-    ->additional([
-        'message' => 'Post created successfully.',
-    ])
-    ->response()
-    ->setStatusCode(201);
-}
+        $post = Post::create($validated);
+        $post->load('user:id,name')->loadCount(['comments', 'likes']);
 
-public function update(Request $request, Post $post)
-{
-    if ($post->user_id !== auth()->id()) {
-        return response()->json([
-            'message' => 'Unauthorized.',
-        ], 403);
+        return (new PostResource($post))
+            ->additional(['message' => 'Post created successfully.'])
+            ->response()
+            ->setStatusCode(201);
     }
 
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'content' => 'required|string',
-        'status' => 'required|in:draft,published',
-    ]);
+    public function update(Request $request, Post $post)
+    {
+        if ($post->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
 
-    $post->update($validated);
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'status' => 'required|in:draft,published',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 
+            'remove_image' => 'nullable|boolean',                          
+        ]);
 
-    return (new PostResource($post))
-    ->additional([
-        'message' => 'Post updated successfully.',
-    ]);
-}
-public function show(Post $post)
-{
-    $post->loadCount(['comments', 'likes']);
-    return new PostResource($post);
-}
+        
+        $data = collect($validated)->except(['image', 'remove_image'])->all();
 
-public function destroy(Post $post)
-{
-    if ($post->user_id !== auth()->id()) {
-        return response()->json([
-            'message' => 'Unauthorized.',
-        ], 403);
+        if ($request->hasFile('image')) {
+            // new image replaces the old one
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $data['image'] = $request->file('image')->store('posts', 'public');
+        } elseif ($request->boolean('remove_image')) {
+            
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $data['image'] = null;
+        }
+
+        $post->update($data);
+        $post->load('user:id,name')->loadCount(['comments', 'likes']);
+
+        return (new PostResource($post))
+            ->additional(['message' => 'Post updated successfully.']);
     }
 
-    $post->delete();
+    public function show(Post $post)
+    {
+        $post->load('user:id,name')->loadCount(['comments', 'likes']);
 
-    return response()->json([
-        'message' => 'Post deleted successfully.',
-    ]);
-}
+        return new PostResource($post);
+    }
 
-    
+    public function destroy(Post $post)
+    {
+        if ($post->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        
+        $post->delete();
+
+        return response()->json(['message' => 'Post deleted successfully.']);
+    }
 }

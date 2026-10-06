@@ -27,6 +27,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'username',
+        'bio',
+        'avatar',
     ];
 
     /**
@@ -112,4 +115,8 @@ public function isFollowing(User $user): bool
         ->where('users.id', $user->id)
         ->exists();
 }
+    public function getAvatarUrlAttribute()
+    {
+    return $this->avatar ? asset('storage/' . $this->avatar) : null;
+    }
 }

@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/posts', [ApiPostController::class, 'store']);
-    Route::put('/posts/{post}', [ApiPostController::class, 'update']);
+    Route::post('/posts/{post}', [ApiPostController::class, 'update']);
     Route::delete('/posts/{post}', [ApiPostController::class, 'destroy']);
     Route::post('/posts/{post}/comments', [ApiCommentController::class, 'store']);
     Route::delete('/comments/{comment}', [ApiCommentController::class, 'destroy']);
@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}/likes', [ApiLikeController::class, 'destroy']);
     Route::get('/posts/{post}/likes', [ApiLikeController::class, 'index']);
     Route::get('/profile', [ApiProfileController::class, 'show']);
+    Route::post('/profile', [ApiProfileController::class, 'update']);
     
     
     //admin:
