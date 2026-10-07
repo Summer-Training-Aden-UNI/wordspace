@@ -36,11 +36,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post}/comments', [ApiCommentController::class, 'store']);
     Route::delete('/comments/{comment}', [ApiCommentController::class, 'destroy']);
     Route::get('/posts/{post}/comments', [ApiCommentController::class, 'index']);
+    
+    
     Route::post('/posts/{post}/likes', [ApiLikeController::class, 'store']);
     Route::delete('/posts/{post}/likes', [ApiLikeController::class, 'destroy']);
     Route::get('/posts/{post}/likes', [ApiLikeController::class, 'index']);
+    Route::get('/user/liked-posts', [ApiPostController::class, 'likedPosts']);
+    
+    
     Route::get('/profile', [ApiProfileController::class, 'show']);
-    Route::put('/profile', [ApiProfileController::class, 'update']);
+    Route::post('/profile', [ApiProfileController::class, 'update']);
     
     
     //admin:
