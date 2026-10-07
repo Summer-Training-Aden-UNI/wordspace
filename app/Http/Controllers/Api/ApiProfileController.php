@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class ApiProfileController extends Controller
@@ -40,49 +41,40 @@ class ApiProfileController extends Controller
 }
 
     public function update(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'username' => 'nullable|string|max:30|unique:users,username,' . $user->id,
-            'email' => 'nullable|email|unique:users,email,' . $user->id,
-            'bio' => 'nullable|string',
-            'avatar' => 'nullable|image|max:2048',
-            'remove_avatar' => 'nullable|boolean',
-        ]);
+    $validated = $request->validate([
+        'name' => 'sometimes|required|string|max:255',
+        'username' => 'sometimes|nullable|string|max:30|unique:users,username,' . $user->id,
+        'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+        'bio' => 'sometimes|nullable|string|max:1000',
+        'avatar' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048', 
+    ], [
+        'avatar.uploaded' => 'The avatar could not be uploaded. The file is larger than the server limit '
+            . '(raise upload_max_filesize / post_max_size in php.ini).',
+    ]);
 
-        if ($request->has('name')) {
-            $user->name = $validated['name'];
-        }
-        if (array_key_exists('username', $validated)) {
-            $user->username = $validated['username'];
-        }
-        if ($request->has('email')) {
-            $user->email = $validated['email'];
-        }
-        if (array_key_exists('bio', $validated)) {
-            $user->bio = $validated['bio'];
-        }
+    $user->fill(collect($validated)->only(['name', 'username', 'email', 'bio'])->all());
 
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
-            }
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $path;
-        } elseif ($request->boolean('remove_avatar')) {
-            if ($user->avatar) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
-            }
-            $user->avatar = null;
-        }
+    $oldAvatar = $user->avatar;
 
-        $user->save();
-
-        return response()->json([
-            'message' => 'Profile updated successfully.',
-            'user' => new UserResource($user),
-        ]);
+    if ($request->hasFile('avatar')) {
+        $user->avatar = $request->file('avatar')->store('avatars', 'public');
+    } elseif ($request->boolean('remove_avatar')) {
+        $user->avatar = null;
     }
+
+    $user->save();
+
+    // Delete the old file only after the DB update succeeded.
+    if ($oldAvatar && $oldAvatar !== $user->avatar) {
+        Storage::disk('public')->delete($oldAvatar);
+    }
+
+    return response()->json([
+        'message' => 'Profile updated successfully.',
+        'user' => new UserResource($user),
+    ]);
+}
 }
