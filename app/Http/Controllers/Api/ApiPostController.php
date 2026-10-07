@@ -63,7 +63,7 @@ class ApiPostController extends Controller
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 
-            'remove_image' => 'nullable|boolean',                          
+            //'remove_image' => 'nullable|boolean',                          
         ]);
 
         
@@ -90,11 +90,16 @@ class ApiPostController extends Controller
             ->additional(['message' => 'Post updated successfully.']);
     }
 
-    public function show(Post $post)
+    public function show(Request $request, Post $post)
     {
-        $post->load('user:id,name')->loadCount(['comments', 'likes']);
+    // Drafts are private: only their author can open them.
+    if ($post->status !== 'published' && $request->user('sanctum')?->id !== $post->user_id) {
+        return response()->json(['message' => 'Post not found.'], 404);
+    }
 
-        return new PostResource($post);
+    $post->load('user:id,name')->loadCount(['comments', 'likes']);
+
+    return new PostResource($post);
     }
 
     public function destroy(Post $post)
