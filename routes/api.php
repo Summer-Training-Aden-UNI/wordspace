@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/posts', [ApiPostController::class, 'store']);
-    Route::post('/posts/{post}', [ApiPostController::class, 'update']);
+    Route::put('/posts/{post}', [ApiPostController::class, 'update']);
     Route::delete('/posts/{post}', [ApiPostController::class, 'destroy']);
     Route::post('/posts/{post}/comments', [ApiCommentController::class, 'store']);
     Route::delete('/comments/{comment}', [ApiCommentController::class, 'destroy']);
@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}/likes', [ApiLikeController::class, 'destroy']);
     Route::get('/posts/{post}/likes', [ApiLikeController::class, 'index']);
     Route::get('/profile', [ApiProfileController::class, 'show']);
-    Route::post('/profile', [ApiProfileController::class, 'update']);
+    Route::put('/profile', [ApiProfileController::class, 'update']);
     
     
     //admin:
@@ -59,11 +59,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/{user}/follow', [ApiFollowController::class, 'destroy']);
     
     
+    
 
 });
+//Public routes for viewing user posts
+Route::get('/users/{user}/posts', [ApiUserController::class, 'posts']);
 
 //Public routes for following and unfollowing users
 Route::get('/users/{user}', [ApiUserController::class, 'show']);
-Route::get('/users/{user}/posts', [ApiUserController::class, 'posts']);
 Route::get('/users/{user}/followers', [ApiUserController::class, 'followers']);
 Route::get('/users/{user}/following', [ApiUserController::class, 'following']);

@@ -35,6 +35,9 @@ class ApiProfileController extends Controller
                 ->withCount('likes')
                 ->get()
                 ->sum('likes_count'),
+
+            'followers_count' => $user->followers()->count(),
+                
         ],
     ]);
 }
