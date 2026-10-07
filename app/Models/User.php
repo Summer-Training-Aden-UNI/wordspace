@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Like;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -75,7 +76,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
-    public function likes()
+    public function likes(): HasMany
     {
     return $this->hasMany(Like::class);
     }
