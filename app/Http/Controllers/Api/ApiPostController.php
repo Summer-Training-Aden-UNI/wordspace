@@ -60,6 +60,9 @@ class ApiPostController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'content' => 'nullable|string',
+            'status' => 'nullable|in:draft,published',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
             'image' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048', 
@@ -113,4 +116,23 @@ class ApiPostController extends Controller
 
         return response()->json(['message' => 'Post deleted successfully.']);
     }
+
+    public function likedPosts(Request $request)
+{
+    $userId = $request->user()->id;
+
+    $posts = Post::whereHas('likes', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+        ->with('user:id,name')
+        ->withCount(['comments', 'likes'])
+        ->latest()
+        ->paginate(10);
+
+    $posts->getCollection()->each(function ($post) {
+        $post->liked_by_me = true;
+    });
+
+    return PostResource::collection($posts);
+}
 }
