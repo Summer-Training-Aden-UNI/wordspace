@@ -62,10 +62,7 @@ class ApiPostController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'status' => 'nullable|in:draft,published',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 
-            'content' => 'required|string',
-            'status' => 'required|in:draft,published',
-            'image' => 'sometimes|file|image|mimes:jpg,jpeg,png,webp|max:2048', 
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             //'remove_image' => 'nullable|boolean',                          
         ]);
 
