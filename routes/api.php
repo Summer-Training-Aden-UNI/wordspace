@@ -23,6 +23,8 @@ Route::get('/posts/{post}/comments', [ApiCommentController::class, 'index']);
 Route::get('/search', [ApiSearchController::class, 'index']);
 Route::get('/users', [ApiUserController::class, 'index']);
 
+Route::get('/posts/{post}/comments', [ApiCommentController::class, 'index']);
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', function (Request $request) {
@@ -35,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/{post}', [ApiPostController::class, 'destroy']);
     Route::post('/posts/{post}/comments', [ApiCommentController::class, 'store']);
     Route::delete('/comments/{comment}', [ApiCommentController::class, 'destroy']);
-    Route::get('/posts/{post}/comments', [ApiCommentController::class, 'index']);
+    
     
     
     Route::post('/posts/{post}/likes', [ApiLikeController::class, 'store']);

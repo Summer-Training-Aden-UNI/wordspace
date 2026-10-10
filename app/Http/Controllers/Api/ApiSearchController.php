@@ -21,7 +21,7 @@ class ApiSearchController extends Controller
 
         $users = User::search($q)->orderBy('name')->limit(10)->get();
 
-        $posts = Post::with('user:id,name')
+        $posts = Post::with('user:id,name,avatar')
             ->where('status', 'published')
             ->search($q)
             ->withCount(['comments', 'likes'])
