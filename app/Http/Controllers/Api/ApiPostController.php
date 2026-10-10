@@ -17,7 +17,7 @@ class ApiPostController extends Controller
             'search' => 'nullable|string|max:100',
         ]);
 
-        $posts = Post::with('user:id,name')          
+        $posts = Post::with('user:id,name,avatar')          
             ->where('status', 'published')
             ->search($request->query('search'))      
             ->withCount(['comments', 'likes'])
@@ -44,7 +44,7 @@ class ApiPostController extends Controller
         $validated['user_id'] = auth()->id();
 
         $post = Post::create($validated);
-        $post->load('user:id,name')->loadCount(['comments', 'likes']);
+        $post->load('user:id,name,avatar')->loadCount(['comments', 'likes']);
 
         return (new PostResource($post))
             ->additional(['message' => 'Post created successfully.'])
@@ -62,7 +62,7 @@ class ApiPostController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'nullable|string',
             'status' => 'nullable|in:draft,published',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             //'remove_image' => 'nullable|boolean',                          
         ]);
 
@@ -84,7 +84,7 @@ class ApiPostController extends Controller
         }
 
         $post->update($data);
-        $post->load('user:id,name')->loadCount(['comments', 'likes']);
+        $post->load('user:id,name,avatar')->loadCount(['comments', 'likes']);
 
         return (new PostResource($post))
             ->additional(['message' => 'Post updated successfully.']);
@@ -97,7 +97,7 @@ class ApiPostController extends Controller
         return response()->json(['message' => 'Post not found.'], 404);
     }
 
-    $post->load('user:id,name')->loadCount(['comments', 'likes']);
+    $post->load('user:id,name,avatar')->loadCount(['comments', 'likes']);
 
     return new PostResource($post);
     }
@@ -121,7 +121,7 @@ class ApiPostController extends Controller
     $posts = Post::whereHas('likes', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-        ->with('user:id,name')
+        ->with('user:id,name,avatar')
         ->withCount(['comments', 'likes'])
         ->latest()
         ->paginate(10);
